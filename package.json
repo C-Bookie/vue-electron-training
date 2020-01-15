@@ -6,23 +6,43 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "electron:build": "vue-cli-service electron:build",
+    "electron:serve": "vue-cli-service electron:serve",
+    "electron:debug": "vue-cli-service electron:serve --debug",
+    "postinstall": "electron-builder install-app-deps",
+    "postuninstall": "electron-builder install-app-deps",
+    "test": "mocha",
+    "start": "electron ."
   },
+  "main": "background.js",
   "dependencies": {
-    "core-js": "^3.4.4",
-    "vue": "^2.6.10"
+    "vue": "^2.6.11",
+    "eslint": "^6.8.0",
+    "babel-eslint": "^10.0.3"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.1.0",
     "@vue/cli-plugin-eslint": "^4.1.0",
     "@vue/cli-plugin-unit-mocha": "^4.1.0",
     "@vue/cli-service": "^4.1.0",
-    "@vue/eslint-config-standard": "^4.0.0",
-    "@vue/test-utils": "1.0.0-beta.29",
-    "babel-eslint": "^10.0.3",
-    "chai": "^4.1.2",
-    "eslint": "^5.16.0",
-    "eslint-plugin-vue": "^5.0.0",
-    "vue-template-compiler": "^2.6.10"
+    "@vue/devtools": "^5.3.3",
+    "@vue/eslint-config-standard": "^5.1.0",
+    "chai": "^4.2.0",
+    "electron": "^7.1.9",
+    "electron-builder": "^22.2.0",
+    "electron-devtools-installer": "^2.2.4",
+    "eslint-loader": "^3.0.3",
+    "eslint-plugin-import": "^2.20.0",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "eslint-plugin-vue": "^6.1.2",
+    "mocha": "^7.0.0",
+    "spectron": "^9.0.0",
+    "vue-cli": "^2.9.6",
+    "vue-cli-plugin-electron-builder": "^2.0.0-beta.1",
+    "vue-template-compiler": "^2.6.11",
+    "webdriver-manager": "^12.1.7"
   }
 }
