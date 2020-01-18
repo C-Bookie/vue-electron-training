@@ -3,9 +3,17 @@
 import { app, protocol, BrowserWindow } from 'electron'
 import {
   createProtocol,
-  installVueDevtools,
+  installVueDevtools
 } from 'vue-cli-plugin-electron-builder/lib'
+// eslint-disable-next-line no-unused-vars
+import devtools from '@vue/devtools'
 const isDevelopment = process.env.NODE_ENV !== 'production'
+
+// process.env.IS_TEST = true
+
+// if (process.env.NODE_ENV === 'development') {
+//   devtools.connect(/* host, port */)
+// }
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -15,14 +23,18 @@ let win
 protocol.registerSchemesAsPrivileged([{ scheme: 'app', privileges: { secure: true, standard: true } }])
 
 function createWindow () {
+  console.log('moo3')
   // Create the browser window.
-  win = new BrowserWindow({ width: 800,
+  win = new BrowserWindow({
+    width: 800,
     height: 600,
     webPreferences: {
       nodeIntegration: true
-    } })
+    }
+  })
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
+    console.log('Loading webpack: ', process.env.WEBPACK_DEV_SERVER_URL)
     // Load the url of the dev server if in development mode
     win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
     if (!process.env.IS_TEST) win.webContents.openDevTools()
@@ -35,6 +47,7 @@ function createWindow () {
   win.on('closed', () => {
     win = null
   })
+  console.log('Created app')
 }
 
 // Quit when all windows are closed.
@@ -43,6 +56,7 @@ app.on('window-all-closed', () => {
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') {
     app.quit()
+    console.log('Closing: darwin')
   }
 })
 
@@ -54,10 +68,45 @@ app.on('activate', () => {
   }
 })
 
+const port = '4242'
+
+const path = require('path')
+
+const pyDir = path.join(__dirname, '..', 'python')
+const pyBin = path.join(pyDir, 'venv', 'Scripts', 'python.exe')
+const pyScript = 'entry_point.py'
+let pyProc = null
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
+  // pyProc = require('child_process').spawn('python', [script, port])
+  pyProc = require('child_process').execFile(pyBin,
+    [pyScript, port],
+    { cwd: pyDir },
+    (error, stdout, stderr) => {
+      if (error) {
+        throw error
+      }
+      console.log(stdout)
+    }
+  )
+
+  var socket = require('socket.io-client')('http://localhost:' + port)
+  // console.log(socket)
+  socket.on('connect', function () {
+    console.log('Connected')
+    socket.send('moo')
+    // socket.emit('message', 'world')
+  })
+  socket.on('message', function (data) {
+    console.log('Message: ' + data)
+  })
+  socket.on('disconnect', function () {
+    console.log('Disconnect')
+  })
+
   if (isDevelopment && !process.env.IS_TEST) {
     // Install Vue Devtools
     // Devtools extensions are broken in Electron 6.0.0 and greater
@@ -70,7 +119,6 @@ app.on('ready', async () => {
     // } catch (e) {
     //   console.error('Vue Devtools failed to install:', e.toString())
     // }
-
   }
   createWindow()
 })
@@ -81,11 +129,15 @@ if (isDevelopment) {
     process.on('message', data => {
       if (data === 'graceful-exit') {
         app.quit()
+        console.log('Closing: graceful-exit')
       }
     })
   } else {
     process.on('SIGTERM', () => {
       app.quit()
+      console.log('Closing: SIGTERM')
     })
   }
 }
+
+console.log('moo2')
