@@ -9,50 +9,40 @@ const sleep = time => new Promise(r => setTimeout(r, time))
 
 // eslint-disable-next-line no-undef
 describe('Application launch', function () {
-  this.timeout(60000)
+  this.timeout(35000)
 
-  // // eslint-disable-next-line no-unused-vars
-  // var stdout, url, stopServe, app
-  // // eslint-disable-next-line no-undef
-  // before(async (done) => {
-  //   var { stdoutTemp, urlTemp, stopServeTemp, appTemp } = await testWithSpectron(spectron)
-  //   stdout = stdoutTemp
-  //   url = urlTemp
-  //   stopServe = stopServeTemp
-  //   app = appTemp
-  //   done()
-  // })
-  //
-  // // eslint-disable-next-line no-undef
-  // after(async (done) => {
-  //   await stopServe()
-  //   done()
-  // })
-
+  var activeSpectron
   // eslint-disable-next-line no-undef
-  it('testAWindowIsCreated', async () => {
-    const { stdout, url, stopServe, app } = await testWithSpectron(spectron)
-    console.log(`electron:serve returned: ${stdout}`)
-    console.log(`the dev server url is: ${url}`)
-    await app.client.waitUntilWindowLoaded()
-    const count = await app.client.getWindowCount()
-    assert.equal(count, 1)
-    await sleep(20000)
-    await stopServe()
+  before(async (resolve, reject) => {
+    activeSpectron = await testWithSpectron(spectron).then(resolve).catch(reject)
   })
 
   // eslint-disable-next-line no-undef
-  it('verifyWindowIsVisibleWithTitle', async () => {
-    // eslint-disable-next-line no-unused-vars
-    const { stdout, url, stopServe, app } = await testWithSpectron(spectron)
+  after(() => {
+    activeSpectron.stopServe()
+  })
+
+  // eslint-disable-next-line no-undef
+  it('testAWindowIsCreated', async (done) => {
+    console.log(`electron:serve returned: ${activeSpectron.stdout}`)
+    console.log(`the dev server url is: ${activeSpectron.url}`)
+    await activeSpectron.app.client.waitUntilWindowLoaded()
+    const count = await activeSpectron.app.client.getWindowCount()
+    assert.equal(count, 1)
+    // await sleep(20000)
+    done()
+  })
+
+  // eslint-disable-next-line no-undef
+  it('verifyWindowIsVisibleWithTitle', async (done) => {
     try {
-      const isVisible = await app.browserWindow.isVisible()
+      const isVisible = await activeSpectron.app.browserWindow.isVisible()
       assert.strictEqual(isVisible, true)
-      const title = await app.client.getTitle()
+      const title = await activeSpectron.app.client.getTitle()
       assert.strictEqual(title, 'tee-test')
     } catch (error) {
       console.error('Test failed', error.message)
     }
-    await stopServe()
+    done()
   })
 })
