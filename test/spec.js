@@ -9,12 +9,12 @@ const sleep = time => new Promise(r => setTimeout(r, time))
 
 // eslint-disable-next-line no-undef
 describe('Application launch', function () {
-  this.timeout(35000)
+  this.timeout(60000)
 
   var activeSpectron
   // eslint-disable-next-line no-undef
-  before(async (resolve, reject) => {
-    activeSpectron = await testWithSpectron(spectron).then(resolve).catch(reject)
+  before(async () => {
+    activeSpectron = await testWithSpectron(spectron)
   })
 
   // eslint-disable-next-line no-undef
@@ -23,18 +23,18 @@ describe('Application launch', function () {
   })
 
   // eslint-disable-next-line no-undef
-  it('testAWindowIsCreated', async (done) => {
+  it('testAWindowIsCreated', async () => {
     console.log(`electron:serve returned: ${activeSpectron.stdout}`)
     console.log(`the dev server url is: ${activeSpectron.url}`)
     await activeSpectron.app.client.waitUntilWindowLoaded()
     const count = await activeSpectron.app.client.getWindowCount()
     assert.equal(count, 1)
     // await sleep(20000)
-    done()
+    // done()
   })
 
   // eslint-disable-next-line no-undef
-  it('verifyWindowIsVisibleWithTitle', async (done) => {
+  it('verifyWindowIsVisibleWithTitle', async () => {
     try {
       const isVisible = await activeSpectron.app.browserWindow.isVisible()
       assert.strictEqual(isVisible, true)
@@ -43,6 +43,6 @@ describe('Application launch', function () {
     } catch (error) {
       console.error('Test failed', error.message)
     }
-    done()
+    // done()
   })
 })

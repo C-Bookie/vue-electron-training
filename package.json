@@ -17,9 +17,11 @@
   },
   "main": "background.js",
   "dependencies": {
+    "bufferutil": "^4.0.1",
     "core-js": "^3.4.4",
     "mocha": "^7.0.0",
     "socket.io-client": "^2.3.0",
+    "utf-8-validate": "^5.0.2",
     "vue": "^2.6.10"
   },
   "devDependencies": {
